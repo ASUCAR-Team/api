@@ -1,4 +1,4 @@
-﻿namespace api.Entities;
+﻿namespace api.Models;
 
 public class User
 {
@@ -7,9 +7,15 @@ public class User
     public string Email { get; set; } = null!;
     public string Name { get; set; } = null!;
     public string LastName { get; set; } = null!;
-    public DateTime Birthdate { get; set; }
+    public DateOnly Birthdate { get; set; }
     public byte[] PasswordHash { get; set; } = null!;
     public byte[] PasswordSalt { get; set; } = null!;
+    
     public int RoleId { get; set; }
     public Role Role { get; set; } = null!;
+
+    public List<Skill> Skills { get; set; } = new();
+    public List<Post> Posts { get; set; } = new();
+    
+    public List<Comment> Comments { get; set; } = new();
 }

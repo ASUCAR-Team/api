@@ -561,3 +561,6 @@ fabric.properties
 # Database credentials
 appsettings.Development.json
 /.idea/.idea.api/.idea/dataSources.xml
+asucar.db
+asucar.db-shm
+asucar.db-wal
