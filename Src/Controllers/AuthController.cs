@@ -13,28 +13,31 @@ namespace api.Controllers;
 [Authorize]
 public class AuthController : BaseApiController
 {
-    private readonly IUserRepository _userRepository;
     private readonly IRoleRepository _roleRepository;
     private readonly ITokenService _tokenService;
+    private readonly IUserRepository _userRepository;
 
-    public AuthController(IUserRepository userRepository, IRoleRepository roleRepository, ITokenService tokenService)
+    public AuthController(
+        IRoleRepository roleRepository,
+        ITokenService tokenService,
+        IUserRepository userRepository)
     {
-        _userRepository = userRepository;
         _roleRepository = roleRepository;
         _tokenService = tokenService;
+        _userRepository = userRepository;
     }
     
     [AllowAnonymous]
     [HttpPost("register")]
-    public async Task<ActionResult<UserDto>> Register(
+    public async Task<ActionResult<UserTokenDto>> Register(
         [FromBody] RegisterClientDto registerClientDto)
     {
         var dateNow = DateOnly.FromDateTime(DateTime.UtcNow);
         
-        if (await _userRepository.GetUserByUsername(registerClientDto.Username) != null)
+        if (await _userRepository.GetUserByUsernameAsync(registerClientDto.Username) != null)
             return BadRequest();
 
-        if (await _userRepository.GetUserByEmail(registerClientDto.Email.ToLower()) != null)
+        if (await _userRepository.GetUserByEmailAsync(registerClientDto.Email.ToLower()) != null)
             return BadRequest();
 
         if (0 < registerClientDto.Birthdate.CompareTo(dateNow))
@@ -64,7 +67,7 @@ public class AuthController : BaseApiController
         if (!await _userRepository.SaveAllAsync())
             return BadRequest();
         
-        return new UserDto
+        return new UserTokenDto
         {
             Username = user.Username,
             Token = _tokenService.CreateToken(user)
@@ -73,11 +76,12 @@ public class AuthController : BaseApiController
 
     [AllowAnonymous]
     [HttpPost("login")]
-    public async Task<ActionResult<UserDto>> Login([FromBody] LoginDto loginDto)
+    public async Task<ActionResult<UserTokenDto>> Login(
+        [FromBody] LoginDto loginDto)
     {
-        var user = await _userRepository.GetUserByEmail(loginDto.Email.ToLower());
+        var user = await _userRepository.GetUserByEmailAsync(loginDto.Email.ToLower());
 
-        if (user is null)
+        if (user is null || user.DisabledAt != DateTime.MinValue)
             return Unauthorized();
 
         using var hmac = new HMACSHA512(user.PasswordSalt);
@@ -87,7 +91,7 @@ public class AuthController : BaseApiController
         if (computedHash.Where((t, i) => t != user.PasswordHash[i]).Any())
             return Unauthorized();
 
-        return new UserDto
+        return new UserTokenDto
         {
             Username = user.Username,
             Token = _tokenService.CreateToken(user)
@@ -95,11 +99,12 @@ public class AuthController : BaseApiController
     }
 
     [HttpPut("update-password")]
-    public async Task<ActionResult> UpdatePassword([FromBody] UpdatePasswordDto updatePasswordDto)
+    public async Task<ActionResult> UpdatePassword(
+        [FromBody] UpdatePasswordDto updatePasswordDto)
     {
-        var user = await _userRepository.GetUserById(User.GetUserId());
+        var user = await _userRepository.GetUserByIdAsync(User.GetUserId());
 
-        if (user is null)
+        if (user is null || user.DisabledAt != DateTime.MinValue)
             return BadRequest();
         
         using var hmac = new HMACSHA512(user.PasswordSalt);

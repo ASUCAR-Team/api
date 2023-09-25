@@ -11,7 +11,7 @@ using api.Data;
 namespace api.Src.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230916221218_InitialCreate")]
+    [Migration("20230919045940_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -43,6 +43,27 @@ namespace api.Src.Data.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Comments");
+                });
+
+            modelBuilder.Entity("api.Models.Like", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("PostId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PostId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Likes");
                 });
 
             modelBuilder.Entity("api.Models.Post", b =>
@@ -141,6 +162,9 @@ namespace api.Src.Data.Migrations
                     b.Property<DateOnly>("Birthdate")
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime>("DisabledAt")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -194,6 +218,25 @@ namespace api.Src.Data.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("api.Models.Like", b =>
+                {
+                    b.HasOne("api.Models.Post", "Post")
+                        .WithMany("Likes")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("api.Models.User", "User")
+                        .WithMany("Likes")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Post");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("api.Models.Post", b =>
                 {
                     b.HasOne("api.Models.User", "User")
@@ -238,6 +281,8 @@ namespace api.Src.Data.Migrations
             modelBuilder.Entity("api.Models.Post", b =>
                 {
                     b.Navigation("Comments");
+
+                    b.Navigation("Likes");
                 });
 
             modelBuilder.Entity("api.Models.Role", b =>
@@ -253,6 +298,8 @@ namespace api.Src.Data.Migrations
             modelBuilder.Entity("api.Models.User", b =>
                 {
                     b.Navigation("Comments");
+
+                    b.Navigation("Likes");
 
                     b.Navigation("Posts");
 

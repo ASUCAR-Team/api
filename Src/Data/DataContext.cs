@@ -11,6 +11,7 @@ public class DataContext : DbContext
     public DbSet<SkillType> SkillTypes { get; set; }
     public DbSet<Post> Posts { get; set; }
     public DbSet<Comment> Comments { get; set; }
+    public DbSet<Like> Likes { get; set; }
     
     public DataContext(DbContextOptions options) : base(options)
     {

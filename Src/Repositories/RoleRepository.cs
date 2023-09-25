@@ -18,4 +18,9 @@ public class RoleRepository : IRoleRepository
     {
         return await _dataContext.Roles.SingleAsync(x => x.Name == name);
     }
+
+    public async Task<Role> GetRoleByRoleIdAsync(int id)
+    {
+        return await _dataContext.Roles.SingleAsync(x => x.Id == id);
+    }
 }

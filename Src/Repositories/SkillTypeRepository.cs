@@ -14,7 +14,7 @@ public class SkillTypeRepository : ISkillTypeRepository
         _dataContext = dataContext;
     }
 
-    public async Task<SkillType?> GetSkillTypeAsync(string name)
+    public async Task<SkillType?> GetSkillTypeByNameAsync(string name)
     {
         return await _dataContext.SkillTypes.SingleOrDefaultAsync(s => s.Name == name);
     }

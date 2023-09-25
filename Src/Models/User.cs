@@ -10,12 +10,18 @@ public class User
     public DateOnly Birthdate { get; set; }
     public byte[] PasswordHash { get; set; } = null!;
     public byte[] PasswordSalt { get; set; } = null!;
+    public DateTime DisabledAt { get; set; }
     
     public int RoleId { get; set; }
     public Role Role { get; set; } = null!;
 
     public List<Skill> Skills { get; set; } = new();
     public List<Post> Posts { get; set; } = new();
-    
     public List<Comment> Comments { get; set; } = new();
+    public List<Like> Likes { get; set; } = new();
+
+    internal static int GetUserId()
+    {
+        throw new NotImplementedException();
+    }
 }

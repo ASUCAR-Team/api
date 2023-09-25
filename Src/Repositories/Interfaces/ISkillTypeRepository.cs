@@ -4,5 +4,5 @@ namespace api.Repositories.Interfaces;
 
 public interface ISkillTypeRepository
 {
-    Task<SkillType?> GetSkillTypeAsync(string name);
+    Task<SkillType?> GetSkillTypeByNameAsync(string name);
 }

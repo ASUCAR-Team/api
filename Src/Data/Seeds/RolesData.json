@@ -3,6 +3,9 @@
     "name": "admin"
   },
   {
+    "name": "administrative"
+  },
+  {
     "name": "client"
   }
 ]

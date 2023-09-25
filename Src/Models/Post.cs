@@ -12,4 +12,5 @@ public class Post
     public User User { get; set; } = null!;
 
     public List<Comment> Comments { get; set; } = new();
+    public List<Like> Likes { get; set; } = new();
 }
